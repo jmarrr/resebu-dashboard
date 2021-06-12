@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  height: 100vh;
+  color: #353535;
+  font-family: "Roboto", sans-serif;
+}
+
+#root {
+  height: 100%;
+}
+
+.App-header {
+  height: 10vmin;
+  padding: 25px 0;
+  text-align: center;
+}
+
+.app {
+  height: 100%;
+  display: flex;
+  position: relative;
+}
+
+.content-wrapper {
+  padding: 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.card-root {
+  min-width: 275;
+}
+
+.card-title {
+  font-size: 14;
+}
