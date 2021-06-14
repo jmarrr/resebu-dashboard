@@ -67,7 +67,7 @@ const Dashboard = () => {
 			<Grid container spacing={3}>
 				<Grid item xs={4}>
 					<MaterialTable
-						title="24 Hour Summary"
+						title="Daily Summary"
 						options={{
 							paging: false,
 							header: false,
