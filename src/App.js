@@ -2,7 +2,7 @@ import  { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import logo from './assets/logo.png'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom';
-import { FaHome, FaChartPie, FaChartLine, FaGg, FaHistory } from "react-icons/fa";
+import { FaHome, FaCalculator, FaChartPie, FaChartLine, FaGg, FaHistory } from "react-icons/fa";
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import 'react-pro-sidebar/dist/css/styles.css';
 
@@ -10,7 +10,9 @@ import DashBoard from './components/dashboard.js'
 import TradeLog from './components/tradelog.js'
 import SymbolStats from './components/symbolstats'
 import TradesChart from './components/tradeschart.js'
+import Calculator from './components/calculator.js'
 import pnlChart from './components/pnlchart.js'
+
 
 function App() {
   return (
@@ -31,6 +33,10 @@ function App() {
 						<MenuItem icon={<FaHome />}>
 							Dashboard
 							<Link to="/" />
+						</MenuItem>
+						<MenuItem icon={<FaCalculator />}>
+							Calculator
+							<Link to="/calculator" />
 						</MenuItem>
 						{/* <MenuItem icon={<FaHistory />}>
 							Trade Log
@@ -55,6 +61,7 @@ function App() {
 			<div class='content-wrapper'>
 				<Switch>
 					<Route path="/" exact component={DashBoard}></Route>
+					<Route path="/calculator" component={Calculator}></Route>
 					<Route path="/tradelog" component={TradeLog}></Route>
 					<Route path="/symbolstats" component={SymbolStats}></Route>
 					<Route path="/tradeschart" component={TradesChart}></Route>
