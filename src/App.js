@@ -32,7 +32,7 @@ function App() {
 							Dashboard
 							<Link to="/" />
 						</MenuItem>
-						<MenuItem icon={<FaHistory />}>
+						{/* <MenuItem icon={<FaHistory />}>
 							Trade Log
 							<Link to="/tradeLog" />
 						</MenuItem>
@@ -47,7 +47,7 @@ function App() {
 						<MenuItem icon={<FaChartLine />}>
 							PnL Chart
 							<Link to="/pnlchart" />
-						</MenuItem>
+						</MenuItem> */}
 					</Menu>
 				</SidebarContent>
 			</ProSidebar>
