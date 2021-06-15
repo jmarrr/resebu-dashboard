@@ -2,7 +2,7 @@ import  { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import logo from './assets/logo.png'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom';
-import { FaHome, FaCalculator, FaChartPie, FaChartLine, FaGg, FaHistory } from "react-icons/fa";
+import { FaHome, FaCalculator } from "react-icons/fa";
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import 'react-pro-sidebar/dist/css/styles.css';
 
