@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import MaterialTable from "material-table";
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import dayjs from 'dayjs';
-import dayjsPluginUTC from 'dayjs/plugin/utc';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { ResponsiveLine } from '@nivo/line'
 import db from './firebase'
 import './styles.css'
 
-dayjs.extend(dayjsPluginUTC)
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault("America/Winnipeg")
 
 const Dashboard = () => {
-    const [totalTrades, setTotalTrades] = useState(0);
 	const [pnlDaily, setpnlDaily] = useState(0);
 	const [pnlPercentDaily, setpnlPercentDaily] = useState(0);
 	const [pnlAllTime, setpnlAllTime] = useState(0);
@@ -31,36 +35,27 @@ const Dashboard = () => {
 			setstartingPortSize(doc.data().startingBalance)
 			setpnlPercentDaily(((portSize-prevPortSize)/prevPortSize * 100).toFixed(2))
 			setpnlPercentAllTime(((portSize-startingPortSize)/startingPortSize * 100).toFixed(2))
+			setpnlAllTime(portSize-startingPortSize)
 		})
 	})
 	
-	const refTradesAllTime = db.firestore().collection("trades")
-	refTradesAllTime.onSnapshot((snap) => {
-		let pnlSumAllTime = 0
-		snap.forEach((doc) => {
-			pnlSumAllTime += doc.data().pnl
-			
-		})
-		setpnlAllTime(pnlSumAllTime)
-	})
-
 	useEffect(() => {
 		const refPortfolioSnapshot = db.firestore().collection("portSnapshot").orderBy('date')
 		refPortfolioSnapshot.onSnapshot((snap) => {
 			let portSnap = [{"data":[]}]
 			snap.forEach((doc) => {
-				portSnap[0].data.push({"x": dayjs(doc.data().date.toDate()).format('MM-D-YYYY'), "y": doc.data().balance })
+				portSnap[0].data.push({"x": dayjs(doc.data().date.toDate()).tz().format('MM-D-YYYY H:mm'), "y": doc.data().balance })
 			})
 			setportSnapshot(portSnap)
 		})
 	}, []);
 
 	useEffect(() => {
-		const refReturnSnapshot = db.firestore().collection("returnSnapshot").orderBy('date')
+		const refReturnSnapshot = db.firestore().collection("returns").orderBy('date')
 		refReturnSnapshot.onSnapshot((snap) => {
 			let retSnap = [{"data":[]}]
 			snap.forEach((doc) => {
-				retSnap[0].data.push({"x": dayjs(doc.data().date.toDate()).format('MM-D-YYYY'), "y": doc.data().return })
+				retSnap[0].data.push({"x": dayjs(doc.data().date.toDate()).tz().format('MM-D-YYYY H:mm'), "y": doc.data().return })
 			})
 			setreturnSnapshot(retSnap)
 		})
@@ -74,200 +69,189 @@ const Dashboard = () => {
 
 			snap.forEach((doc) => {
 				pnlSum += doc.data().pnl
-				tempdailyProfits[0].data.push({"x": dayjs(doc.data().date.toDate()).format('H:mm'), "y": pnlSum})
+				tempdailyProfits[0].data.push({"x": dayjs(doc.data().date.toDate()).tz().format('H:mm'), "y": pnlSum})
 			})
 			
 			setdailyProfits(tempdailyProfits);
-			setTotalTrades(snap.size)
 			setpnlDaily(pnlSum)
 		})
 	}, []);
 
-	console.log(dailyProfits[0].data)
 
 	return (	
-		<div style={{ height: '100%', width: '100%' }}>
-			<Grid container spacing={3}>
-				<Grid item xs={4}>
-					<MaterialTable
-						title="Daily Summary"
-						options={{
-							paging: false,
-							header: false,
-							search: false,
-							cellStyle: {
-								textAlign: "left",
-								BorderAll: 1
-							},
-							
-						}}
-						columns={[
-							{ title: "Name", field: "name" },
-							{ title: "Value", field: "value" },
-							
-						]}
-						data={[
-							{
-								name: "Total Trades",
-								value: totalTrades,
-							},
-							{
-								name: "PnL($)",
-								value: `$${pnlDaily.toFixed(2)}`,
-							},
-							{
-								name: "PnL(%)",
-								value: `${pnlPercentDaily}%`,
-							},
-						]}
-					/>
+		<Grid container spacing={3}> 
+			<Grid item xs={12}>
+				<Card bg="primary" text="white">
+					<CardContent style={{ padding: '30px' }}>
+				<h3 style={{ marginTop: '0' }}>Portfolio Summary</h3>
+				<Grid container spacing={3} style={{ textAlign: 'center' }}>
+					<Grid item xs={3}>
+						<Typography color="textSecondary" gutterBottom>
+							Daily PnL ($)
+						</Typography>
+						<Typography variant="h4" component="h2">
+							${(pnlDaily).toFixed(2)}
+						</Typography>
+					</Grid>
+					<Grid item xs={3}>
+						<Typography color="textSecondary" gutterBottom>
+							Daily PnL (%)
+						</Typography>
+						<Typography variant="h4" component="h2">
+							{pnlPercentDaily}%
+						</Typography>
+					</Grid>
+					<Grid item xs={3}>
+						<Typography color="textSecondary" gutterBottom>
+							Total PnL ($)
+						</Typography>
+						<Typography variant="h4" component="h2">
+							${(pnlAllTime).toFixed(2)}
+						</Typography>
+					</Grid>
+					<Grid item xs={3}>
+						<Typography color="textSecondary" gutterBottom>
+							Total PnL (%)
+						</Typography>
+						<Typography variant="h4" component="h2">
+							{(pnlAllTimePercent)}%
+						</Typography>
+					</Grid>
 				</Grid>
-				<Grid item xs={4}>
-					<MaterialTable
-						title="All Time Summary"
-						options={{
-							paging: false,
-							header: false,
-							search: false,
-							cellStyle: {
-								textAlign: "left",
-								BorderAll: 1
-							},
-							
-						}}
-						columns={[
-							{ title: "Name", field: "name" },
-							{ title: "Value", field: "value" },
-							
-						]}
-						data={[
-							{
-								name: "Portfolio Size",
-								value: `$${portSize.toLocaleString('USD')}`,
-							},
-							{
-								name: "PnL($)",
-								value: `$${pnlAllTime.toFixed(2)}`,
-							},
-							{
-								name: "PnL(%)",
-								value: `${pnlAllTimePercent}%`,
-							},
-						]}
-					/>
-				</Grid>
+				</CardContent>
+				</Card>
 			</Grid>
-			<div style={{ height: '50%' }}>	
-				<h3>Daily Profits</h3>
-				<ResponsiveLine
-					data={dailyProfits}
-					margin={{ right: 40, bottom: 50, left: 80 }}
-					yFormat=" >-.2f"
-					axisTop={null}
-					axisRight={null}
-					lineWidth={1}
-					enableArea={true}
-					enablePoints={false}
-					useMesh={true}
-					colors={{ scheme: 'paired' }}
-					axisBottom={{
-						orient: 'bottom',
-						tickSize: 1,
-						tickPadding: 5,
-						tickRotation: 0,
-						legend: 'Date',
-						legendOffset: 36,
-						legendPosition: 'middle'
-					}}
-					axisLeft={{
-						format: function(value){ 
-							return `$${value}`;
-						},
-						orient: 'left',
-						tickSize: 5,
-						tickPadding: 5,
-						tickRotation: 0,
-						legend: 'PnL',
-						legendOffset: -40,
-						legendPosition: 'middle'
-					}}
-				/>
-			</div>
-			<br />
-			<div style={{ height: '50%' }}>	
-				<h3>Daily Return</h3>
-				<ResponsiveLine
-					data={returnSnapshot}
-					margin={{ right: 40, bottom: 50, left: 80 }}
-					yFormat=" >-.2f"
-					axisTop={null}
-					axisRight={null}
-					lineWidth={1}
-					enableArea={true}
-					enablePoints={false}
-					useMesh={true}
-					colors={{ scheme: 'paired' }}
-					axisBottom={{
-						orient: 'bottom',
-						tickSize: 1,
-						tickPadding: 5,
-						tickRotation: 0,
-						legend: 'Date',
-						legendOffset: 36,
-						legendPosition: 'middle'
-					}}
-					axisLeft={{
-						format: function(value){ 
-							return `${value}%`;
-						},
-						orient: 'left',
-						tickSize: 5,
-						tickPadding: 5,
-						tickRotation: 0,
-						legend: 'Percent',
-						legendOffset: -50,
-						legendPosition: 'middle'
-					}}
-				/>
-			</div>
-			<br />
-			<div style={{ height: '50%' }}>	
-				<h3>Portfolio Size</h3>
-				<ResponsiveLine
-					data={portSnapshot}
-					margin={{ right: 40, bottom: 50, left: 80 }}
-					axisTop={null}
-					axisRight={null}
-					lineWidth={1}
-					enableArea={true}
-					enablePoints={false}
-					useMesh={true}
-					colors={{ scheme: 'paired' }}
-					axisBottom={{
-						orient: 'bottom',
-						tickSize: 1,
-						tickPadding: 5,
-						tickRotation: 0,
-						legend: 'Date',
-						legendOffset: 36,
-						legendPosition: 'middle'
-					}}
-					axisLeft={{
-						format: function(value){ 
-							return `$${value.toLocaleString('USD')}`;
-						},
-						orient: 'left',
-						tickSize: 5,
-						tickPadding: 5,
-						tickRotation: 0,
-						legend: 'Balance in $',
-						legendOffset: -60,
-						legendPosition: 'middle'
-					}}
-				/>
-			</div>
-		
-		</div>
+			<Grid container spacing={3} ></Grid>
+				<Grid item xs={6}>
+					<h3>Daily PnL</h3>
+					<div style={{ width: '100%', height: '90%' }}>
+						<ResponsiveLine
+							data={dailyProfits}
+							margin={{ top: 10, right: 0, bottom: 50, left: 50 }}
+							axisTop={null}
+							axisRight={null}
+							lineWidth={1}
+							enableArea={true}
+							enablePoints={false}
+							useMesh={true}
+							colors={{ scheme: 'paired' }}
+							xScale={{ type: "time", format: "%H:%M", useUTC: false, precision: 'minute'}}
+							xFormat="time:%H:%M"
+							axisBottom={{
+								orient: 'bottom',
+								format: "%H:%m",
+								tickValues: "every 1 hours",
+								tickSize: 1,
+								tickPadding: 5,
+								tickRotation: -10,
+								legend: 'Date',
+								legendOffset: 40,
+								legendPosition: 'middle'
+							}}
+							axisLeft={{
+								format: function(value){ 
+									return `$${value}`;
+								},
+								orient: 'left',
+								tickSize: 5,
+								tickPadding: 5,
+								tickRotation: 0,
+								legend: 'PnL',
+								legendOffset: -40,
+								legendPosition: 'middle'
+							}}
+						/>
+					</div>		
+				</Grid>
+				<Grid item xs={6}>
+					<h3>Daily Return</h3>
+					<div style={{ width: '100%', height: '90%' }}>
+						<ResponsiveLine
+							data={returnSnapshot}
+							margin={{ top: 10, right: 0, bottom: 50, left: 80 }}
+							yFormat=" >-.2f"
+							axisTop={null}
+							axisRight={null}
+							lineWidth={1}
+							enableArea={false}
+							enablePoints={false}
+							useMesh={true}
+							colors={{ scheme: 'paired' }}
+							xScale={{ type: "time", format: "%m-%d-%Y %H:%M", useUTC: false, precision: 'day' }}
+							xFormat="time:%m-%d-%Y %H:%M"
+							axisBottom={{
+								orient: 'bottom',
+								format: "%b %d %Y",
+								tickValues: "every 1 day",
+								tickSize: 1,
+								tickPadding: 5,
+								tickRotation: -10,
+								legend: 'Date',
+								legendOffset: 40,
+								legendPosition: 'middle'
+							}}
+							axisLeft={{
+								format: function(value){ 
+									return `${value}%`;
+								},
+								orient: 'left',
+								tickSize: 5,
+								tickPadding: 5,
+								tickRotation: 0,
+								legend: 'Percent',
+								legendOffset: -50,
+								legendPosition: 'middle'
+							}}
+						/>
+					</div>
+				</Grid>
+			<Grid container spacing={3} justify="center" >
+				<Grid item xs={12} >
+					<h3>Portfolio Size</h3>
+					<div  style={{ width: '100%', height: '90%' }}>
+						<ResponsiveLine
+							data={portSnapshot}
+							margin={{ top: 10, right: 40, bottom: 90, left: 80 }}
+							axisTop={null}
+							axisRight={null}
+							lineWidth={1}
+							enableArea={true}
+							enablePoints={false}
+							useMesh={true}
+							colors={{ scheme: 'paired' }}
+							yScale={{ type: 'linear', min: 'auto', max: 'auto', clamp: true, nice: true}}
+							xScale={{ type: "time", format: "%m-%d-%Y %H:%M", useUTC: false, precision: 'minute' }}
+							xFormat="time:%m-%d-%Y %H:%M"
+							axisBottom={{
+								orient: 'bottom',
+								format: "%b %d %H:%m",
+								tickValues: "every 1 hours",
+								tickSize: 5,
+								tickPadding: 5,
+								tickRotation: -30,
+								legend: 'Date',
+								legendOffset: 70,
+								legendPosition: 'middle',
+							}}
+							axisLeft={{
+								format: function(value){ 
+									return `$${value.toLocaleString('USD')}`;
+								},
+								orient: 'left',
+								tickSize: 5,
+								tickPadding: 5,
+								tickRotation: 0,
+								legend: 'Balance',
+								legendOffset: -60,
+								legendPosition: 'middle'
+							}}
+							
+						/>
+					</div>
+				</Grid>			
+			</Grid>				
+		</Grid>
+	
 	)
 }
 
