@@ -10,7 +10,7 @@ body {
 }
 
 .App-header {
-  height: 10vmin;
+  height: 15vmin;
   padding: 25px 0;
   text-align: center;
 }
@@ -35,4 +35,15 @@ body {
 
 .card-title {
   font-size: 14;
+}
+
+.collapsed-sidebar-btn {
+  width: 50px;
+  min-width: 50px;
+  line-height: 40px;
+  padding: 0;
+}
+
+.collapsed-sidebar-content {
+  margin-left: -15px;
 }

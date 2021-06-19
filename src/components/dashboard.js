@@ -98,7 +98,7 @@ const Dashboard = () => {
 					<CardContent style={{ padding: '30px' }}>
 				<h3 style={{ marginTop: '0' }}>Portfolio Summary</h3>
 				<Grid container spacing={3} style={{ textAlign: 'center' }}>
-					<Grid item xs={3}>
+					<Grid item xs={12} md={3}>
 						<Typography color="textSecondary" gutterBottom>
 							Daily PnL ($)
 						</Typography>
@@ -106,7 +106,7 @@ const Dashboard = () => {
 							${(pnlDaily).toFixed(2)}
 						</Typography>
 					</Grid>
-					<Grid item xs={3}>
+					<Grid item xs={12} md={3}>
 						<Typography color="textSecondary" gutterBottom>
 							Daily PnL (%)
 						</Typography>
@@ -114,7 +114,7 @@ const Dashboard = () => {
 							{pnlPercentDaily}%
 						</Typography>
 					</Grid>
-					<Grid item xs={3}>
+					<Grid item xs={12} md={3}>
 						<Typography color="textSecondary" gutterBottom>
 							Total PnL ($)
 						</Typography>
@@ -122,7 +122,7 @@ const Dashboard = () => {
 							${(pnlAllTime).toFixed(2)}
 						</Typography>
 					</Grid>
-					<Grid item xs={3}>
+					<Grid item xs={12} md={3}>
 						<Typography color="textSecondary" gutterBottom>
 							Total PnL (%)
 						</Typography>
@@ -135,7 +135,7 @@ const Dashboard = () => {
 				</Card>
 			</Grid>
 			<Grid container spacing={3} ></Grid>
-				<Grid item xs={6}>
+				<Grid item xs={12} md={6}>
 					<h3>Daily $ Return </h3>
 					<div style={{ width: '100%', height: '90%' }}>
 						<ResponsiveLine
@@ -177,7 +177,7 @@ const Dashboard = () => {
 						/>
 					</div>		
 				</Grid>
-				<Grid item xs={6}>
+				<Grid item xs={12} md={6}>
 					<h3>Daily % Return</h3>
 					<div style={{ width: '100%', height: '90%' }}>
 						<ResponsiveLine
@@ -221,7 +221,7 @@ const Dashboard = () => {
 					</div>
 				</Grid>
 			<Grid container spacing={3} justify="center" >
-				<Grid item xs={6}>
+				<Grid item xs={12} md={6}>
 				<h3>Daily PnL</h3>
 					<div style={{ width: '100%', height: '90%' }}>
 						<ResponsiveLine
@@ -262,7 +262,7 @@ const Dashboard = () => {
 						/>
 					</div>		
 				</Grid>
-				<Grid item xs={6} >
+				<Grid item xs={12} md={6} >
 					<h3>Portfolio Size</h3>
 					<div  style={{ width: '100%', height: '90%' }}>
 						<ResponsiveLine
@@ -281,12 +281,12 @@ const Dashboard = () => {
 							axisBottom={{
 								orient: 'bottom',
 								format: "%b %d %H:%m",
-								tickValues: "every 1 hours",
+								tickValues: "every 12 hours",
 								tickSize: 5,
 								tickPadding: 5,
-								tickRotation: -30,
+								tickRotation: -10,
 								legend: 'Date',
-								legendOffset: 70,
+								legendOffset: 40,
 								legendPosition: 'middle',
 							}}
 							axisLeft={{
